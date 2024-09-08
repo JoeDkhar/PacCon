@@ -202,8 +202,18 @@ void respawn_demon(Demon* demon) {
     board[y][x] = DEMON;
 }
 
-// void update_demons() {
-// }
+void update_demons() {
+    for (int i = 0; i < demon_count; i++) {
+        if (demons[i].active) {
+            move_demon(&demons[i]);
+        } else {
+            demons[i].respawn_timer--;
+            if (demons[i].respawn_timer <= 0) {
+                respawn_demon(&demons[i]);
+            }
+        }
+    }
+}
 
 // void update_powerup() {
 // }
