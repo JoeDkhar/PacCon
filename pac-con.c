@@ -114,8 +114,25 @@ void place_food_and_powerups() {
         }
     }
 }
-// void place_demons() {
-// }
+
+void place_demons() {
+    demon_count = NUM_DEMONS;
+    for (int i = 0; i < NUM_DEMONS; i++) {
+        int x, y;
+        do {
+            x = rand() % (WIDTH - 2) + 1;
+            y = rand() % (HEIGHT - 2) + 1;
+        } while (board[y][x] != EMPTY && board[y][x] != FOOD);
+        demons[i].pos.x = x;
+        demons[i].pos.y = y;
+        demons[i].direction = rand() % 4;
+        demons[i].on_food = (board[y][x] == FOOD);
+        demons[i].active = true;
+        demons[i].respawn_timer = 0;
+        board[y][x] = DEMON;
+    }
+}
+
 
 // void initialize_game() {
 // }
