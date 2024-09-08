@@ -134,8 +134,25 @@ void place_demons() {
 }
 
 
-// void initialize_game() {
-// }
+
+void initialize_game() {
+    srand(time(NULL));
+    initialize_board();
+    place_walls();
+    place_food_and_powerups();
+    place_demons();
+    
+    pacman.x = WIDTH / 2;
+    pacman.y = HEIGHT / 2;
+    board[pacman.y][pacman.x] = PACMAN;
+
+    score = 0;
+    lives = 3;
+    game_over = false;
+    win = false;
+    powerup_active = false;
+    powerup_timer = 0;
+}
 
 // void draw_board() {
 // }
