@@ -230,19 +230,8 @@ void update_powerup() {
 // void display_home_page() {
 // }
 
-int display_main_menu() {
-    clear();
-    printw("Main Menu\n");
-    printw("1. Play the Game\n");
-    printw("2. View High Scores\n");
-    printw("3. Exit\n");
-    printw("\nEnter your choice: ");
-    refresh();
-    
-    int choice;
-    scanf("%d", &choice);
-    return choice;
-}
+// int display_main_menu() {
+// }
 
 // void save_high_score(int score) {
 // }
