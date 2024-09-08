@@ -71,8 +71,17 @@ void save_high_score(int score);
 void view_high_scores();
 
 // Function implementations
-//void initialize_board() {
-// }
+void initialize_board() {
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
+            if (i == 0 || j == WIDTH - 1 || j == 0 || i == HEIGHT - 1) {
+                board[i][j] = WALL;
+            } else {
+                board[i][j] = EMPTY;
+            }
+        }
+    }
+}
 
 // void place_walls() {
 // }
