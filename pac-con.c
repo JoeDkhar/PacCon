@@ -16,8 +16,8 @@
 #define POWERUP 'O'
 #define NUM_DEMONS 4
 #define NUM_DOTS 100
-#define POWERUP_DURATION 100
-#define DEMON_RESPAWN_TIME 150
+#define POWERUP_DURATION 30
+#define DEMON_RESPAWN_TIME 20
 #define MAX_HIGH_SCORES 5
 #define HIGH_SCORE_FILE "high_scores.txt"
 
