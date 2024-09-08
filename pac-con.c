@@ -154,8 +154,47 @@ void initialize_game() {
     powerup_timer = 0;
 }
 
-// void draw_board() {
-// }
+
+void draw_board() {
+    clear();
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
+            switch (board[i][j]) {
+                case PACMAN:
+                    attron(COLOR_PAIR(powerup_active ? 6 : 1));
+                    mvaddch(i, j, PACMAN);
+                    attroff(COLOR_PAIR(powerup_active ? 6 : 1));
+                    break;
+                case WALL:
+                    attron(COLOR_PAIR(2));
+                    mvaddch(i, j, WALL);
+                    attroff(COLOR_PAIR(2));
+                    break;
+                case FOOD:
+                    attron(COLOR_PAIR(3));
+                    mvaddch(i, j, FOOD);
+                    attroff(COLOR_PAIR(3));
+                    break;
+                case DEMON:
+                    attron(COLOR_PAIR(4));
+                    mvaddch(i, j, DEMON);
+                    attroff(COLOR_PAIR(4));
+                    break;
+                case POWERUP:
+                    attron(COLOR_PAIR(5));
+                    mvaddch(i, j, POWERUP);
+                    attroff(COLOR_PAIR(5));
+                    break;
+                default:
+                    mvaddch(i, j, board[i][j]);
+            }
+        }
+    }
+    mvprintw(HEIGHT + 1, 0, "Score: %d | Food remaining: %d | Powerup: %d | Lives: %d", 
+             score, food_count, powerup_timer / 10, lives);
+    refresh();
+}
+
 
 // void reset_pacman_position() {
 // }
