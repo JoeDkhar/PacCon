@@ -215,8 +215,14 @@ void update_demons() {
     }
 }
 
-// void update_powerup() {
-// }
+void update_powerup() {
+    if (powerup_active) {
+        powerup_timer--;
+        if (powerup_timer == 0) {
+            powerup_active = false;
+        }
+    }
+}
 
 // int play_game() {
 // }
