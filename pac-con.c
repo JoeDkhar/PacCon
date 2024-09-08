@@ -186,8 +186,21 @@ void move_demon(Demon* demon) {
     }
 }
 
-// void respawn_demon(Demon* demon) {
-// }
+void respawn_demon(Demon* demon) {
+    int x, y;
+    do {
+        x = rand() % (WIDTH - 2) + 1;
+        y = rand() % (HEIGHT - 2) + 1;
+    } while (board[y][x] != EMPTY && board[y][x] != FOOD);
+
+    demon->pos.x = x;
+    demon->pos.y = y;
+    demon->direction = rand() % 4;
+    demon->on_food = (board[y][x] == FOOD);
+    demon->active = true;
+    demon->respawn_timer = 0;
+    board[y][x] = DEMON;
+}
 
 // void update_demons() {
 // }
