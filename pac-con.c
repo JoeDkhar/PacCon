@@ -95,9 +95,25 @@ void place_walls() {
     }
 }
 
-// void place_food_and_powerups() {
-// }
+void place_food_and_powerups() {
+    food_count = 0;
+    int powerups_placed = 0;
+    int max_powerups = NUM_DOTS / 20;
 
+    while (food_count < NUM_DOTS || powerups_placed < max_powerups) {
+        int i = rand() % (HEIGHT - 2) + 1;
+        int j = rand() % (WIDTH - 2) + 1;
+        if (board[i][j] == EMPTY) {
+            if (food_count < NUM_DOTS) {
+                board[i][j] = FOOD;
+                food_count++;
+            } else if (powerups_placed < max_powerups) {
+                board[i][j] = POWERUP;
+                powerups_placed++;
+            }
+        }
+    }
+}
 // void place_demons() {
 // }
 
