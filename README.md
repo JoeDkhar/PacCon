@@ -3,7 +3,7 @@ console-based-pacman-game
 
 to execute file in CodeSpace use 
 
-	 gcc -o main main.c -lncurses
-  	./main
+	 gcc -o filename filename.c -lncurses
+  	./filename
 
  
