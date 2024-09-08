@@ -95,9 +95,50 @@ void reset_pacman_position() {
     pacman.y = HEIGHT / 2;
     board[pacman.y][pacman.x] = PACMAN;
 }
-// void move_pacman(int dx, int dy) {
-// }
+void move_pacman(int dx, int dy) {
+    int new_x = pacman.x + dx;
+    int new_y = pacman.y + dy;
 
+    if (board[new_y][new_x] != WALL) {
+        if (board[new_y][new_x] == FOOD) {
+            score += 10;
+            food_count--;
+            if (food_count == 0) {
+                win = true;
+                game_over = true;
+                return;
+            }
+        } else if (board[new_y][new_x] == POWERUP) {
+            powerup_active = true;
+            powerup_timer = POWERUP_DURATION;
+            score += 50;
+        } else if (board[new_y][new_x] == DEMON) {
+            if (powerup_active) {
+                for (int i = 0; i < demon_count; i++) {
+                    if (demons[i].pos.x == new_x && demons[i].pos.y == new_y && demons[i].active) {
+                        demons[i].active = false;
+                        demons[i].respawn_timer = DEMON_RESPAWN_TIME;
+                        score += 200;
+                        break;
+                    }
+                }
+            } else {
+                lives--;
+                if (lives == 0) {
+                    game_over = true;
+                    return;
+                }
+                reset_pacman_position();
+                return;
+            }
+        }
+
+        board[pacman.y][pacman.x] = EMPTY;
+        pacman.x = new_x;
+        pacman.y = new_y;
+        board[pacman.y][pacman.x] = PACMAN;
+    }
+}
 // void move_demon(Demon* demon) {
 // }
 
