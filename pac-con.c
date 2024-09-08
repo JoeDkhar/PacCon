@@ -83,8 +83,17 @@ void initialize_board() {
     }
 }
 
-// void place_walls() {
-// }
+void place_walls() {
+    int count = 50;
+    while (count != 0) {
+        int i = rand() % (HEIGHT - 2) + 1;
+        int j = rand() % (WIDTH - 2) + 1;
+        if (board[i][j] == EMPTY) {
+            board[i][j] = WALL;
+            count--;
+        }
+    }
+}
 
 // void place_food_and_powerups() {
 // }
