@@ -89,9 +89,12 @@ void view_high_scores();
 // void draw_board() {
 // }
 
-// void reset_pacman_position() {
-// }
-
+void reset_pacman_position() {
+    board[pacman.y][pacman.x] = EMPTY;
+    pacman.x = WIDTH / 2;
+    pacman.y = HEIGHT / 2;
+    board[pacman.y][pacman.x] = PACMAN;
+}
 // void move_pacman(int dx, int dy) {
 // }
 
