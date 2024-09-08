@@ -71,23 +71,130 @@ void save_high_score(int score);
 void view_high_scores();
 
 // Function implementations
-//void initialize_board() {
-// }
+void initialize_board() {
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
+            if (i == 0 || j == WIDTH - 1 || j == 0 || i == HEIGHT - 1) {
+                board[i][j] = WALL;
+            } else {
+                board[i][j] = EMPTY;
+            }
+        }
+    }
+}
 
-// void place_walls() {
-// }
+void place_walls() {
+    int count = 50;
+    while (count != 0) {
+        int i = rand() % (HEIGHT - 2) + 1;
+        int j = rand() % (WIDTH - 2) + 1;
+        if (board[i][j] == EMPTY) {
+            board[i][j] = WALL;
+            count--;
+        }
+    }
+}
 
-// void place_food_and_powerups() {
-// }
+void place_food_and_powerups() {
+    food_count = 0;
+    int powerups_placed = 0;
+    int max_powerups = NUM_DOTS / 20;
 
-// void place_demons() {
-// }
+    while (food_count < NUM_DOTS || powerups_placed < max_powerups) {
+        int i = rand() % (HEIGHT - 2) + 1;
+        int j = rand() % (WIDTH - 2) + 1;
+        if (board[i][j] == EMPTY) {
+            if (food_count < NUM_DOTS) {
+                board[i][j] = FOOD;
+                food_count++;
+            } else if (powerups_placed < max_powerups) {
+                board[i][j] = POWERUP;
+                powerups_placed++;
+            }
+        }
+    }
+}
 
-// void initialize_game() {
-// }
+void place_demons() {
+    demon_count = NUM_DEMONS;
+    for (int i = 0; i < NUM_DEMONS; i++) {
+        int x, y;
+        do {
+            x = rand() % (WIDTH - 2) + 1;
+            y = rand() % (HEIGHT - 2) + 1;
+        } while (board[y][x] != EMPTY && board[y][x] != FOOD);
+        demons[i].pos.x = x;
+        demons[i].pos.y = y;
+        demons[i].direction = rand() % 4;
+        demons[i].on_food = (board[y][x] == FOOD);
+        demons[i].active = true;
+        demons[i].respawn_timer = 0;
+        board[y][x] = DEMON;
+    }
+}
 
-// void draw_board() {
-// }
+
+
+void initialize_game() {
+    srand(time(NULL));
+    initialize_board();
+    place_walls();
+    place_food_and_powerups();
+    place_demons();
+    
+    pacman.x = WIDTH / 2;
+    pacman.y = HEIGHT / 2;
+    board[pacman.y][pacman.x] = PACMAN;
+
+    score = 0;
+    lives = 3;
+    game_over = false;
+    win = false;
+    powerup_active = false;
+    powerup_timer = 0;
+}
+
+
+void draw_board() {
+    clear();
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
+            switch (board[i][j]) {
+                case PACMAN:
+                    attron(COLOR_PAIR(powerup_active ? 6 : 1));
+                    mvaddch(i, j, PACMAN);
+                    attroff(COLOR_PAIR(powerup_active ? 6 : 1));
+                    break;
+                case WALL:
+                    attron(COLOR_PAIR(2));
+                    mvaddch(i, j, WALL);
+                    attroff(COLOR_PAIR(2));
+                    break;
+                case FOOD:
+                    attron(COLOR_PAIR(3));
+                    mvaddch(i, j, FOOD);
+                    attroff(COLOR_PAIR(3));
+                    break;
+                case DEMON:
+                    attron(COLOR_PAIR(4));
+                    mvaddch(i, j, DEMON);
+                    attroff(COLOR_PAIR(4));
+                    break;
+                case POWERUP:
+                    attron(COLOR_PAIR(5));
+                    mvaddch(i, j, POWERUP);
+                    attroff(COLOR_PAIR(5));
+                    break;
+                default:
+                    mvaddch(i, j, board[i][j]);
+            }
+        }
+    }
+    mvprintw(HEIGHT + 1, 0, "Score: %d | Food remaining: %d | Powerup: %d | Lives: %d", 
+             score, food_count, powerup_timer / 10, lives);
+    refresh();
+}
+
 
 void reset_pacman_position() {
     board[pacman.y][pacman.x] = EMPTY;
