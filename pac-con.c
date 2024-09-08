@@ -89,23 +89,140 @@ void view_high_scores();
 // void draw_board() {
 // }
 
-// void reset_pacman_position() {
-// }
+void reset_pacman_position() {
+    board[pacman.y][pacman.x] = EMPTY;
+    pacman.x = WIDTH / 2;
+    pacman.y = HEIGHT / 2;
+    board[pacman.y][pacman.x] = PACMAN;
+}
+void move_pacman(int dx, int dy) {
+    int new_x = pacman.x + dx;
+    int new_y = pacman.y + dy;
 
-// void move_pacman(int dx, int dy) {
-// }
+    if (board[new_y][new_x] != WALL) {
+        if (board[new_y][new_x] == FOOD) {
+            score += 10;
+            food_count--;
+            if (food_count == 0) {
+                win = true;
+                game_over = true;
+                return;
+            }
+        } else if (board[new_y][new_x] == POWERUP) {
+            powerup_active = true;
+            powerup_timer = POWERUP_DURATION;
+            score += 50;
+        } else if (board[new_y][new_x] == DEMON) {
+            if (powerup_active) {
+                for (int i = 0; i < demon_count; i++) {
+                    if (demons[i].pos.x == new_x && demons[i].pos.y == new_y && demons[i].active) {
+                        demons[i].active = false;
+                        demons[i].respawn_timer = DEMON_RESPAWN_TIME;
+                        score += 200;
+                        break;
+                    }
+                }
+            } else {
+                lives--;
+                if (lives == 0) {
+                    game_over = true;
+                    return;
+                }
+                reset_pacman_position();
+                return;
+            }
+        }
 
-// void move_demon(Demon* demon) {
-// }
+        board[pacman.y][pacman.x] = EMPTY;
+        pacman.x = new_x;
+        pacman.y = new_y;
+        board[pacman.y][pacman.x] = PACMAN;
+    }
+}
+void move_demon(Demon* demon) {
+    if (!demon->active) return;
 
-// void respawn_demon(Demon* demon) {
-// }
+    int dx = 0, dy = 0;
+    switch (demon->direction) {
+        case 0: dy = -1; break;
+        case 1: dx = 1; break;
+        case 2: dy = 1; break;
+        case 3: dx = -1; break;
+    }
 
-// void update_demons() {
-// }
+    int new_x = demon->pos.x + dx;
+    int new_y = demon->pos.y + dy;
 
-// void update_powerup() {
-// }
+    if (board[new_y][new_x] != WALL && board[new_y][new_x] != DEMON) {
+        if (demon->on_food) {
+            board[demon->pos.y][demon->pos.x] = FOOD;
+        } else {
+            board[demon->pos.y][demon->pos.x] = EMPTY;
+        }
+
+        demon->pos.x = new_x;
+        demon->pos.y = new_y;
+
+        if (board[new_y][new_x] == FOOD) {
+            demon->on_food = true;
+        } else {
+            demon->on_food = false;
+        }
+
+        if (board[new_y][new_x] == PACMAN) {
+            if (!powerup_active) {
+                lives--;
+                if (lives == 0) {
+                    game_over = true;
+                } else {
+                    reset_pacman_position();
+                }
+            }
+        } else {
+            board[new_y][new_x] = DEMON;
+        }
+    } else {
+        demon->direction = rand() % 4;
+    }
+}
+
+void respawn_demon(Demon* demon) {
+    int x, y;
+    do {
+        x = rand() % (WIDTH - 2) + 1;
+        y = rand() % (HEIGHT - 2) + 1;
+    } while (board[y][x] != EMPTY && board[y][x] != FOOD);
+
+    demon->pos.x = x;
+    demon->pos.y = y;
+    demon->direction = rand() % 4;
+    demon->on_food = (board[y][x] == FOOD);
+    demon->active = true;
+    demon->respawn_timer = 0;
+    board[y][x] = DEMON;
+}
+
+void update_demons() {
+    for (int i = 0; i < demon_count; i++) {
+        if (demons[i].active) {
+            move_demon(&demons[i]);
+        } else {
+            demons[i].respawn_timer--;
+            if (demons[i].respawn_timer <= 0) {
+                respawn_demon(&demons[i]);
+            }
+        }
+    }
+}
+
+void update_powerup() {
+    if (powerup_active) {
+        powerup_timer--;
+        if (powerup_timer == 0) {
+            powerup_active = false;
+        }
+    }
+}
 
 // int play_game() {
 // }
