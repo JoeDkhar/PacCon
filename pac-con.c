@@ -455,7 +455,28 @@ void save_high_score(int score) {
         fclose(file);
     }
 }
-
+void view_high_scores() {
+    clear();
+    printw("High Scores\n\n");
+    
+    FILE *file = fopen(HIGH_SCORE_FILE, "r");
+    if (file) {
+        char name[20];
+        int score;
+        int rank = 1;
+        while (fscanf(file, "%s %d", name, &score) == 2 && rank <= MAX_HIGH_SCORES) {
+            printw("%d. %s: %d\n", rank, name, score);
+            rank++;
+        }
+        fclose(file);
+    } else {
+        printw("No high scores yet.\n");
+    }
+    
+    printw("\nPress any key to return to the main menu...");
+    refresh();
+    getch();
+}
 
 // void view_high_scores() {
 // }
