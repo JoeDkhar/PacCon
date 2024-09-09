@@ -331,8 +331,44 @@ void update_powerup() {
     }
 }
 
-// int play_game() {
-// }
+int play_game() {
+    int ch;
+    int frame_count = 0;
+    int demon_move_interval = 3;
+
+    while (!game_over && !win) {
+        draw_board();
+        ch = getch();
+        if (ch != ERR) {
+            switch (ch) {
+                case 'w': case KEY_UP:    move_pacman(0, -1); break;
+                case 's': case KEY_DOWN:  move_pacman(0, 1); break;
+                case 'a': case KEY_LEFT:  move_pacman(-1, 0); break;
+                case 'd': case KEY_RIGHT: move_pacman(1, 0); break;
+                case 'q': game_over = true; break;
+            }
+        }
+        
+        if (frame_count % demon_move_interval == 0) {
+            update_demons();
+        }
+        
+        update_powerup();
+        frame_count++;
+        usleep(100000);
+    }
+
+    draw_board();
+    if (win) {
+        mvprintw(HEIGHT + 2, 0, "You have won the Game! Your final score: %d", score);
+    } else if (game_over) {
+        mvprintw(HEIGHT + 2, 0, "Game Over! Your final score: %d", score);
+    }
+    refresh();
+    getch();
+    
+    return score;
+}
 
 // void display_home_page() {
 // }
