@@ -414,7 +414,47 @@ int display_main_menu() {
     scanf("%d", &choice);
     return choice;
 }
-
+void save_high_score(int score) {
+    HighScore high_scores[MAX_HIGH_SCORES];
+    FILE *file = fopen(HIGH_SCORE_FILE, "r");
+    int count = 0;
+    
+    if (file) {
+        while (fscanf(file, "%s %d", high_scores[count].name, &high_scores[count].score) == 2 && count < MAX_HIGH_SCORES) {
+            count++;
+        }
+        fclose(file);
+    }
+    
+    if (count < MAX_HIGH_SCORES || score > high_scores[count-1].score) {
+        char name[20];
+        clear();
+        printw("You got a high score! Enter your name: ");
+        refresh();
+        echo();
+        getnstr(name, sizeof(name));
+        noecho();
+        
+        int i;
+        for (i = count - 1; i >= 0 && high_scores[i].score < score; i--) {
+            if (i + 1 < MAX_HIGH_SCORES) {
+                high_scores[i + 1] = high_scores[i];
+            }
+        }
+        
+        if (i + 1 < MAX_HIGH_SCORES) {
+            strcpy(high_scores[i + 1].name, name);
+            high_scores[i + 1].score = score;
+            if (count < MAX_HIGH_SCORES) count++;
+        }
+        
+        file = fopen(HIGH_SCORE_FILE, "w");
+        for (i = 0; i < count; i++) {
+            fprintf(file, "%s %d\n", high_scores[i].name, high_scores[i].score);
+        }
+        fclose(file);
+    }
+}
 
 
 // void view_high_scores() {
