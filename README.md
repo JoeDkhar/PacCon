@@ -1,9 +1,10 @@
 # PacCon
 console-based-pacman-game
 
-to execute file in CodeSpace use 
+to build file in unix based environment.
 
-	 gcc -o filename filename.c -lncurses
-  	./filename
+```gcc -o pac-con pac-con.c -lncurses```
 
- 
+to run the build.
+
+```./pac-con``` 
