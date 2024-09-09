@@ -478,8 +478,47 @@ void view_high_scores() {
     getch();
 }
 
-// void view_high_scores() {
-// }
-// int main() {
+int main() {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    
+    start_color();
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_RED, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_WHITE, COLOR_BLACK);
 
-// }
+    display_home_page();
+
+    bool keep_playing = true;
+    while (keep_playing) {
+        int choice = display_main_menu();
+        switch (choice) {
+            case 1:
+                // Play the game
+                initialize_game();
+                int final_score = play_game();
+                save_high_score(final_score);
+                break;
+            case 2:
+                view_high_scores();
+                break;
+            case 3:
+                keep_playing = false;
+                break;
+            default:
+                printw("Invalid choice. Press any key to continue...");
+                refresh();
+                getch();
+        }
+    }
+
+    endwin();
+    return 0;
+}
+
