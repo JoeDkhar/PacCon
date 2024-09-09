@@ -331,20 +331,194 @@ void update_powerup() {
     }
 }
 
-// int play_game() {
-// }
+int play_game() {
+    int ch;
+    int frame_count = 0;
+    int demon_move_interval = 3;
 
-// void display_home_page() {
-// }
+    while (!game_over && !win) {
+        draw_board();
+        ch = getch();
+        if (ch != ERR) {
+            switch (ch) {
+                case 'w': case KEY_UP:    move_pacman(0, -1); break;
+                case 's': case KEY_DOWN:  move_pacman(0, 1); break;
+                case 'a': case KEY_LEFT:  move_pacman(-1, 0); break;
+                case 'd': case KEY_RIGHT: move_pacman(1, 0); break;
+                case 'q': game_over = true; break;
+            }
+        }
+        
+        if (frame_count % demon_move_interval == 0) {
+            update_demons();
+        }
+        
+        update_powerup();
+        frame_count++;
+        usleep(100000);
+    }
 
-// int display_main_menu() {
-// }
+    draw_board();
+    if (win) {
+        mvprintw(HEIGHT + 2, 0, "You have won the Game! Your final score: %d", score);
+    } else if (game_over) {
+        mvprintw(HEIGHT + 2, 0, "Game Over! Your final score: %d", score);
+    }
+    refresh();
+    getch();
+    
+    return score;
+}
 
-// void save_high_score(int score) {
-// }
+void display_home_page() {
+    clear();
+    
+    
+    printw("\n\n");
+    printw(" /$$      /$$           /$$                                                   /$$$$$$$$             \n");
+    printw("| $$  /$ | $$          | $$                                                  |__  $$__/             \n");
+    printw("| $$ /$$$| $$  /$$$$$$ | $$  /$$$$$$$  /$$$$$$  /$$$$$$/$$$$   /$$$$$$          | $$  /$$$$$$       \n");
+    printw("| $$/$$ $$ $$ /$$__  $$| $$ /$$_____/ /$$__  $$| $$_  $$_  $$ /$$__  $$         | $$ /$$__  $$      \n");
+    printw("| $$$$_  $$$$| $$$$$$$$| $$| $$      | $$  \\ $$| $$ \\ $$ \\ $$| $$$$$$$$         | $$| $$  \\ $$      \n");
+    printw("| $$$/ \\  $$$| $$_____/| $$| $$      | $$  | $$| $$ | $$ | $$| $$_____/         | $$| $$  | $$      \n");
+    printw("| $$/   \\  $$|  $$$$$$$| $$|  $$$$$$$|  $$$$$$/| $$ | $$ | $$|  $$$$$$$         | $$|  $$$$$$/      \n");
+    printw("|__/     \\__/ \\_______/|__/ \\_______/ \\______/ |__/ |__/ |__/ \\_______/         |__/ \\______/       \n");
+    printw("                                                                                                    \n");
+    printw("                                                                                                    \n");
+    printw("                                                                                                    \n");
+    printw("                   /$$$$$$$                                                                         \n");
+    printw("                  | $$__  $$                                                                        \n");
+    printw("                  | $$  \\ $$ /$$$$$$   /$$$$$$$ /$$$$$$/$$$$   /$$$$$$  /$$$$$$$                    \n");
+    printw("                  | $$$$$$$/|____  $$ /$$_____/| $$_  $$_  $$ |____  $$| $$__  $$                   \n");
+    printw("                  | $$____/  /$$$$$$$| $$      | $$ \\ $$ \\ $$  /$$$$$$$| $$  \\ $$                   \n");
+    printw("                  | $$      /$$__  $$| $$      | $$ | $$ | $$ /$$__  $$| $$  | $$                   \n");
+    printw("                  | $$     |  $$$$$$$|  $$$$$$$| $$ | $$ | $$|  $$$$$$$| $$  | $$                   \n");
+    printw("                  |__/      \\_______/ \\_______/|__/ |__/ |__/ \\_______/|__/  |__/                   \n");
+    printw("                                                                                                    \n");
+    printw("                                                                                                    \n");
+    
+    printw("\n\nPress any key to continue...");
+    refresh();
+    getch();
+}
+int display_main_menu() {
+    clear();
+    printw("Main Menu\n");
+    printw("1. Play the Game\n");
+    printw("2. View High Scores\n");
+    printw("3. Exit\n");
+    printw("\nEnter your choice: ");
+    refresh();
+    
+    int choice;
+    scanf("%d", &choice);
+    return choice;
+}
+void save_high_score(int score) {
+    HighScore high_scores[MAX_HIGH_SCORES];
+    FILE *file = fopen(HIGH_SCORE_FILE, "r");
+    int count = 0;
+    
+    if (file) {
+        while (fscanf(file, "%s %d", high_scores[count].name, &high_scores[count].score) == 2 && count < MAX_HIGH_SCORES) {
+            count++;
+        }
+        fclose(file);
+    }
+    
+    if (count < MAX_HIGH_SCORES || score > high_scores[count-1].score) {
+        char name[20];
+        clear();
+        printw("You got a high score! Enter your name: ");
+        refresh();
+        echo();
+        getnstr(name, sizeof(name));
+        noecho();
+        
+        int i;
+        for (i = count - 1; i >= 0 && high_scores[i].score < score; i--) {
+            if (i + 1 < MAX_HIGH_SCORES) {
+                high_scores[i + 1] = high_scores[i];
+            }
+        }
+        
+        if (i + 1 < MAX_HIGH_SCORES) {
+            strcpy(high_scores[i + 1].name, name);
+            high_scores[i + 1].score = score;
+            if (count < MAX_HIGH_SCORES) count++;
+        }
+        
+        file = fopen(HIGH_SCORE_FILE, "w");
+        for (i = 0; i < count; i++) {
+            fprintf(file, "%s %d\n", high_scores[i].name, high_scores[i].score);
+        }
+        fclose(file);
+    }
+}
+void view_high_scores() {
+    clear();
+    printw("High Scores\n\n");
+    
+    FILE *file = fopen(HIGH_SCORE_FILE, "r");
+    if (file) {
+        char name[20];
+        int score;
+        int rank = 1;
+        while (fscanf(file, "%s %d", name, &score) == 2 && rank <= MAX_HIGH_SCORES) {
+            printw("%d. %s: %d\n", rank, name, score);
+            rank++;
+        }
+        fclose(file);
+    } else {
+        printw("No high scores yet.\n");
+    }
+    
+    printw("\nPress any key to return to the main menu...");
+    refresh();
+    getch();
+}
 
-// void view_high_scores() {
-// }
-// int main() {
+int main() {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    
+    start_color();
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_RED, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_WHITE, COLOR_BLACK);
 
-// }
+    display_home_page();
+
+    bool keep_playing = true;
+    while (keep_playing) {
+        int choice = display_main_menu();
+        switch (choice) {
+            case 1:
+                // Play the game
+                initialize_game();
+                int final_score = play_game();
+                save_high_score(final_score);
+                break;
+            case 2:
+                view_high_scores();
+                break;
+            case 3:
+                keep_playing = false;
+                break;
+            default:
+                printw("Invalid choice. Press any key to continue...");
+                refresh();
+                getch();
+        }
+    }
+
+    endwin();
+    return 0;
+}
+
